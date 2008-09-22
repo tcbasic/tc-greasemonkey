@@ -11,7 +11,6 @@
 const TCCity_version = '20070912.3';
 
 // contributors
-// TCbasic.com
 //   Fluffybunnykins
 //   RozarioRivetor
 //   Cesar-Valentino
