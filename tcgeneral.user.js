@@ -1,14 +1,17 @@
 // ==UserScript==
 // @name                TCCity
-// @version             20070912.3
+// @version             20080922.1
 // @author              hexkid
-// @description         Several changes to TornCity ...
-// @namespace           http://hexkid.info/GM/
+// @description         Enhancements to Torn City via Greasemonkey Script
+// @namespace           http://tcbasic.com/
 // @include             http://torncity.com/*
 // @include             http://www.torncity.com/*
 // ==/UserScript==
 
-const TCCity_version = '20070912.3';
+const TCCity_version = '20080922.1';
+
+// updated after 3rd party rule, by:
+//   MathewS
 
 // contributors
 //   Fluffybunnykins
@@ -18,7 +21,6 @@ const TCCity_version = '20070912.3';
 //   Johnny_Chimpo
 //   FAQ
 //   King_Hobo
-//   PhilZero
 
 // TODO in no particular order
 //   add possibility to highlight 'things'
@@ -49,26 +51,48 @@ var jailLevelMax = readGMValue('cfg', 'jailLevelMax', '0', true);
 var hospLevelMin = readGMValue('cfg', 'hospLevelMin', '0', true);
 var hospLevelMax = readGMValue('cfg', 'hospLevelMax', '0', true);
 var highlightString = readGMValue('cfg', 'highlightID', '', true);
-var highlightArray = highlightString.split(/\D+/);
+  var highlightArray = highlightString.split(/\D+/);
 var pokerHeight = readGMValue('cfg', 'pokerHeight', '53', true);
+var pokerTimeout = readGMValue('cfg', 'pokerTimeout', '20', true);
 var notepadHeight = readGMValue('cfg', 'notepadHeight', '7', true);
 var itemSort1 = readGMValue('cfg', 'itemSort1', '1', true);
 var itemSort2 = readGMValue('cfg', 'itemSort2', '0', true);
 var itemGroupSize = readGMValue('cfg', 'itemGroupSize', '5', true);
+var clockPos = readGMValue('cfg', 'clockPos', '2', true);
 
+var hideLink_items = readGMValue('cfg', 'hideLink_items', '0', true);         
+var hideLink_events = readGMValue('cfg', 'hideLink_events', '0', true);         
+var hideLink_awards = readGMValue('cfg', 'hideLink_awards', '0', true);         
+var hideLink_mail = readGMValue('cfg', 'hideLink_mail', '0', true);         // available in city
+var hideLink_job = readGMValue('cfg', 'hideLink_job', '1', true);         
+var hideLink_gym = readGMValue('cfg', 'hideLink_gym', '0', true);         // available in city
+var hideLink_prop = readGMValue('cfg', 'hideLink_prop', '1', true);         // available in home
 var hideLink_edu = readGMValue('cfg', 'hideLink_edu', '1', true);           // available in the city
+var hideLink_crimes = readGMValue('cfg', 'hideLink_crimes', '0', true);         
+var hideLink_search = readGMValue('cfg', 'hideLink_search', '1', true);         // available in city
+var hideLink_friends = readGMValue('cfg', 'hideLink_friends', '0', true);         // available in home
+var hideLink_blackl = readGMValue('cfg', 'hideLink_blackl', '0', true);         // available in home
 var hideLink_news = readGMValue('cfg', 'hideLink_news', '1', true);         // available in the city
-var hideLink_jail = readGMValue('cfg', 'hideLink_jail', '1', true);         // available in the city
+var hideLink_jail = readGMValue('cfg', 'hideLink_jail', '0', true);         // available in the city
 var hideLink_hospital = readGMValue('cfg', 'hideLink_hospital', '1', true); // available in the city
-var hideLink_casino = readGMValue('cfg', 'hideLink_casino', '1', true);     // available in the city
+var hideLink_casino = readGMValue('cfg', 'hideLink_casino', '0', true);     // available in the city
 var hideLink_users = readGMValue('cfg', 'hideLink_users', '1', true);       // completely useless
-var hideLink_forums = readGMValue('cfg', 'hideLink_forums', '1', true);     // available in the city
+var hideLink_forums = readGMValue('cfg', 'hideLink_forums', '0', true);     // available in the city
 var hideLink_chat = readGMValue('cfg', 'hideLink_chat', '1', true);         // never used it, and don't ever intend to use
+var hideLink_radio = readGMValue('cfg', 'hideLink_radio', '1', true);       // never used it, available under stats
+var hideLink_faction = readGMValue('cfg', 'hideLink_faction', '0', true);         // available in home
+var hideLink_comp = readGMValue('cfg', 'hideLink_comp', '1', true);         
+var hideLink_pref = readGMValue('cfg', 'hideLink_pref', '1', true);         // available in city
 var hideLink_manual = readGMValue('cfg', 'hideLink_manual', '1', true);     // available in the city
 var hideLink_rewards = readGMValue('cfg', 'hideLink_rewards', '1', true);   // available next to points
 
 var addLink_gothere = readGMValue('cfg', 'addLink_gothere', '1', true);
+var addLink_bank = readGMValue('cfg', 'addLink_bank', '1', true);
 var addLink_notepad = readGMValue('cfg', 'addLink_notepad', '1', true);
+var addLink_pmarket = readGMValue('cfg', 'addLink_pmarket', '0', true);
+var addLink_imarket = readGMValue('cfg', 'addLink_imarket', '0', true);
+var addLink_ahouse = readGMValue('cfg', 'addLink_ahouse', '0', true);
+var addLink_smarket = readGMValue('cfg', 'addLink_smarket', '0', true);
 var addLink_hof = readGMValue('cfg', 'addLink_hof', '1', true);
 var addLink_outbox = readGMValue('cfg', 'addLink_outbox', '1', true);
 var addLink_jailItems = readGMValue('cfg', 'addLink_jailItems', '1', true);
@@ -77,12 +101,15 @@ var addLink_advanced = readGMValue('cfg', 'addLink_advanced', '1', true);
 var addLink_friendsAdv = readGMValue('cfg', 'addLink_friendsAdv', '1', true);
 var addLink_enemiesAdv = readGMValue('cfg', 'addLink_enemiesAdv', '1', true);
 var addLink_facAttacks = readGMValue('cfg', 'addLink_facAttacks', '1', true);
-var addLink_facStaff = readGMValue('cfg', 'addLink_facStaff', '1', true);
+var addLink_facStaff = readGMValue('cfg', 'addLink_facStaff', '0', true);
 var addLink_facMembers = readGMValue('cfg', 'addLink_facMembers', '1', true);
-var addLink_facWarBase = readGMValue('cfg', 'addLink_facWarBase', '1', true);
+var addLink_facWarBase = readGMValue('cfg', 'addLink_facWarBase', '0', true);
 var addLink_facInfo = readGMValue('cfg', 'addLink_facInfo', '1', true);
 var addLink_facForum = readGMValue('cfg', 'addLink_facForum', '1', true);
 var addLink_facCrime = readGMValue('cfg', 'addLink_facCrime', '1', true);
+
+var facID = readGMValue('cfg', 'facID', '0', true);
+var facForumID = readGMValue('cfg', 'facForumID', '0', true);
 
 var statsSpe = readGMValue('cfg', 'statsSpe', '0', true);
 var statsStr = readGMValue('cfg', 'statsStr', '0', true);
@@ -94,6 +121,7 @@ var addBattlePercs = readGMValue('cfg', 'addBattlePercs', '1', true);
 var addWeaponMults = readGMValue('cfg', 'addWeaponMults', '1', true);
 var addRefillBars = readGMValue('cfg', 'addRefillBars', '1', true);
 var replaceTickingClock = readGMValue('cfg', 'replaceTickingClock', '0', true);
+var timeZoneAdj = readGMValue('cfg','timeZoneAdj', '0', true);
 
 /*************************************************************************************************/
 
@@ -103,34 +131,53 @@ var uselessLinks = new Array();
   // uselessLinks[][0] is the link proper
   // uselessLinks[][1] is the occurance of the link, used for repeated links
   // uselessLinks[][2] is 0 (don't hide) or 1 (hide)
-  uselessLinks[tmp++] = [/^education\.php$/, 1, hideLink_edu];
-  uselessLinks[tmp++] = [/^newspaper\.php$/, 1, hideLink_news];
-  uselessLinks[tmp++] = [/^jailview\.php$/, 1, hideLink_jail];
-  uselessLinks[tmp++] = [/^hospitalview\.php$/, 1, hideLink_hospital];
-  uselessLinks[tmp++] = [/^casino\.php$/, 1, hideLink_casino];
-  uselessLinks[tmp++] = [/^usersonline\.php$/, 1, hideLink_users];
-  uselessLinks[tmp++] = [/^forums\.php$/, 1, hideLink_forums];
-  uselessLinks[tmp++] = [/^chat2\.php$/, 1, hideLink_chat];
-  uselessLinks[tmp++] = [/^manual\.php$/, 1, hideLink_manual];
+  uselessLinks[tmp++] = [/^\/item\.php$/, 1, hideLink_items];
+  uselessLinks[tmp++] = [/^\/events\.php$/, 1, hideLink_events];
+  uselessLinks[tmp++] = [/^\/awards\.php$/, 1, hideLink_awards];
+  uselessLinks[tmp++] = [/^\/messages\.php$/, 1, hideLink_mail];
+  uselessLinks[tmp++] = [/^\/jobs\.php$/, 1, hideLink_job];
+  uselessLinks[tmp++] = [/^\/gym\.php$/, 1, hideLink_gym];
+  uselessLinks[tmp++] = [/^\/properties\.php$/, 1, hideLink_prop];
+  uselessLinks[tmp++] = [/^\/education\.php$/, 1, hideLink_edu];
+  uselessLinks[tmp++] = [/^\/crimes\.php$/, 1, hideLink_crimes];
+  uselessLinks[tmp++] = [/^\/search\.php$/, 1, hideLink_search];
+  uselessLinks[tmp++] = [/^friendlist\.php$/, 1, hideLink_friends];
+  uselessLinks[tmp++] = [/^blacklist\.php$/, 1, hideLink_blackl];
+  uselessLinks[tmp++] = [/^\/newspaper\.php$/, 1, hideLink_news];
+  uselessLinks[tmp++] = [/^\/jailview\.php$/, 1, hideLink_jail];
+  uselessLinks[tmp++] = [/^\/hospitalview\.php$/, 1, hideLink_hospital];
+  uselessLinks[tmp++] = [/^\/casino\.php$/, 1, hideLink_casino];
+  uselessLinks[tmp++] = [/^\/usersonline\.php$/, 1, hideLink_users];
+  uselessLinks[tmp++] = [/^\/forums\.php$/, 1, hideLink_forums];
+  uselessLinks[tmp++] = [/^\/chat2\.php$/, 1, hideLink_chat];
+  uselessLinks[tmp++] = [/\/index\.html/, 2, hideLink_radio];
+  uselessLinks[tmp++] = [/\/factions\.php/, 1, hideLink_faction];
+  uselessLinks[tmp++] = [/competition/, 1, hideLink_comp];
+  uselessLinks[tmp++] = [/^\/preferences\.php$/, 1, hideLink_pref];
+  uselessLinks[tmp++] = [/^\/manual\.php$/, 1, hideLink_manual];
   uselessLinks[tmp++] = [/^rewards\.php$/, 2, hideLink_rewards];
 }
 
-var arrayThefts = [[1000, 'Sneak&nbsp;Thief'], [2500, 'Prowler'], [5000, 'Safe&nbsp;Cracker']];
+var arrayThefts = [[1000, 'Sneak&nbsp;Thief'], [2500, 'Prowler'], [5000, 'Safe&nbsp;Cracker'], [7500, 'Marauder'], [10000, 'Cat&nbsp;Burgler']];
 var arrayVirus = [[500, 'Ub3rn00b&nbsp;Hacker'], [1000, 'N00b&nbsp;Hacker'], [1500, '1337n00b&nbsp;Hacker'],
                   [2000, 'Ph34r3dn00b&nbsp;Hacker'], [2500, 'Ph34r3d&nbsp;Hacker'], [3000, 'Ph343d1337&nbsp;Hacker'],
                   [3500, 'Ub3rph34r3d&nbsp;Hacker'], [4000, 'Ub3r&nbsp;Hacker'], [4500, '1337&nbsp;Hacker'],
-                  [5000, 'Ub3r1337&nbsp;Hacker']];
+                  [5000, 'Ub3r1337&nbsp;Hacker'],[5500, 'Key&nbsp;Puncher'],[6000, 'Script&nbsp;Kid']];
 var arrayMurder = [[1000, 'Beginner&nbsp;Assassin'], [2000, 'Novice&nbsp;Assassin'], [3000, 'Competent&nbsp;Assassin'],
                    [4000, 'Elite&nbsp;Assassin'], [5000, 'Deadly&nbsp;Assassin'], [6000, 'Lethal&nbsp;Assassin']];
 var arrayDrugs = [[250, 'Drug&nbsp;Pusher'], [500, 'Drug&nbsp;Runner'], [1000, 'Drug&nbsp;Dealer'],
                   [2000, 'Drug&nbsp;Lord']];
 var arrayFraud = [[300, 'Fake'], [600, 'Counterfeit'], [900, 'Pretender'],
                   [1500, 'Imposter'], [2000, 'Pseudo'], [2500, 'Imitation'],
-                  [3000, 'Simulated'], [3500, 'Hoax'], [4000, 'Faux']];
+                  [3000, 'Simulated'], [3500, 'Hoax'], [4000, 'Faux'],
+                  [5000, 'Poser'], [6000, 'Deception'], [7000, 'Phony']];
 var arrayGTA = [[200, 'Gone&nbsp;In&nbsp;300&nbsp;Seconds'], [400, 'Gone&nbsp;In&nbsp;240&nbsp;Seconds'], [600, 'Gone&nbsp;In&nbsp;180&nbsp;Seconds'],
                 [800, 'Gone&nbsp;In&nbsp;120&nbsp;Seconds'], [1000, 'Gone&nbsp;In&nbsp;60&nbsp;Seconds'], [1200, 'Gone&nbsp;In&nbsp;30&nbsp;Seconds'],
                 [1500, 'Gone&nbsp;In&nbsp;45&nbsp;Seconds'], [2000, 'Gone&nbsp;In&nbsp;15&nbsp;Seconds'], [2500, 'Booster'],
-                [3000, 'Joyrider'], [3500, 'Super&nbsp;Booster'], [4000, 'Master&nbsp;Carjacker']];
+                [3000, 'Joy&nbsp;Rider'], [3500, 'Super&nbsp;Booster'], [4000, 'Master&nbsp;Carjacker'],
+                [4500, 'Slim&nbsp;Jim'], [5000, 'Novice&nbsp;Joy&nbsp;Rider'], [5500, 'Novice&nbsp;Slim&nbsp;Jim'],
+                [6000, 'Professional&nbsp;Joy&nbsp;Rider'], [6500, 'Professional&nbsp;Booster'], [7000, 'Professional&nbsp;Slim&nbsp;Jim'],
+                [8000, 'Master&nbsp;Joy&nbsp;Rider']];
 
 var bustAwards = new Array();
 bustAwards[0] = [250, 'Novice Buster'];
@@ -181,14 +228,14 @@ jobPromotion['Law'] = new Array();
   jobPromotion['Law']['Trial Lawyer'] = 15000;
   jobPromotion['Law']['Circuit Court Judge'] = 25000;
   jobPromotion['Law']['Federal Judge'] = '#NA';
-jobPromotion['Hospital'] = new Array();
-  jobPromotion['Hospital']['Medical Student'] = 4000;
-  jobPromotion['Hospital']['Houseman'] = 6000;
-  jobPromotion['Hospital']['Senior Houseman'] = 9500;
-  jobPromotion['Hospital']['GP'] = 15000;
-  jobPromotion['Hospital']['Consultant'] = 30000;
-  jobPromotion['Hospital']['Surgeon'] = 50000;
-  jobPromotion['Hospital']['Brain Surgeon'] = '#NA';
+jobPromotion['Medical'] = new Array();
+  jobPromotion['Medical']['Medical Student'] = 4000;
+  jobPromotion['Medical']['Houseman'] = 6000;
+  jobPromotion['Medical']['Senior Houseman'] = 9500;
+  jobPromotion['Medical']['GP'] = 15000;
+  jobPromotion['Medical']['Consultant'] = 30000;
+  jobPromotion['Medical']['Surgeon'] = 50000;
+  jobPromotion['Medical']['Brain Surgeon'] = '#NA';
 
 var weaponArray = new Array();
 if (addWeaponMults == '1') {
@@ -213,8 +260,8 @@ if (addWeaponMults == '1') {
   weaponArray['mel']['Kitchenknife'] = 0.085;
   weaponArray['mel']['Knuckledusters'] = 0;
   weaponArray['mel']['KodachiSwords'] = 0.95;
-  weaponArray['mel']['LeatherBullWhip'] = 0.045; // value calculated by me
-  weaponArray['mel']['Ninjaclaws'] = 0.175; // value calculated by me
+  weaponArray['mel']['LeatherBullWhip'] = 0;
+  weaponArray['mel']['Ninjaclaws'] = 0;
   weaponArray['mel']['Nunchucks'] = 0;
   weaponArray['mel']['Penknife'] = 0;
   weaponArray['mel']['Rustysword'] = 0;
@@ -258,7 +305,7 @@ if (addWeaponMults == '1') {
   weaponArray['pri'] = new Array();
   weaponArray['pri']['9mmUzi'] = 1.25;
   weaponArray['pri']['AK47'] = 0.65;
-  weaponArray['pri']['Antitank'] = 2.5;
+  weaponArray['pri']['AntiTank'] = 2.5;
   weaponArray['pri']['BenelliM1Tactical12Gauge'] = 0.22;
   weaponArray['pri']['BenelliM4Super'] = 0.85;
   weaponArray['pri']['BushmasterCarbon15Type21s'] = 0.5;
@@ -329,6 +376,10 @@ if ((statsTotal > 0) && (document.location.href.match(/\/index\.php$/))) {
   var def = 0;
   var dex = 0;
 
+  //var rx_spe = /Speed:\s+<font color="(.......)">\s+<b>(?:(\d+),)?(\d+\.\d+)<\/b>\s+<br><\/font>/im;
+  //var rx_str = /Strength:\s+<font color="(.......)">\s+<b>(?:(\d+),)?(\d+\.\d+)<\/b>\s+<br><\/font>/im;
+  //var rx_def = /Defence:\s+<font color="(.......)">\s+<b>(?:(\d+),)?(\d+\.\d+)<\/b>\s+<br><\/font>/im;
+  //var rx_dex = /Dexterity:\s+<font color="(.......)">\s+<b>(?:(\d+),)?(\d+\.\d+)<\/b>\s+<br><\/font>/im;
   var rx_spe = /Speed:\s+<font color="#(?:[A-F0-9]{6})">\s+<b>(?:(\d+),)?(\d+\.\d+)<\/b>\s+<br><\/font>/im;
   var rx_str = /Strength:\s+<font color="#(?:[A-F0-9]{6})">\s+<b>(?:(\d+),)?(\d+\.\d+)<\/b>\s+<br><\/font>/im;
   var rx_def = /Defence:\s+<font color="#(?:[A-F0-9]{6})">\s+<b>(?:(\d+),)?(\d+\.\d+)<\/b>\s+<br><\/font>/im;
@@ -380,17 +431,23 @@ if (replaceLoginPage == '1') {
   // replace login form with a very simple one
   if (document.location.href.match(/\/(index\.php)?$/)) {
     if (document.body.innerHTML.match(/<form name="login" method="post" action="authenticate\.php">/i)) {
-      var un = document.body.innerHTML.match(/<input[^>]*name="player"[^>]*value="([^"]*)"/)[1];
-      var pw = document.body.innerHTML.match(/<input[^>]*name="password"[^>]*value="([^"]*)"/)[1];
-      document.body.innerHTML = '\
+      //var un = document.body.innerHTML.match(/<input[^>]*name="player"[^>]*value="([^"]*)"/)[1];
+      //var pw = document.body.innerHTML.match(/<input[^>]*name="password"[^>]*value="([^"]*)"/)[1];
+
+var un = "";
+var pw = "";
+
+document.body.innerHTML = '\
 <center>\
 <form name="login" method="post" action="authenticate.php">\
-<input type="hidden" name="save" value="OFF">\
 Username: <input type="text" name="player" size="16" value="' + un + '"><br>\
 Password: <input type="password" name="password" size="16" value="' + pw + '"><br>\
-Save login info: <label><input type="radio" name="save" value="ON" checked="checked">Yes</label> <label><input type="radio" name="save" value="OFF">No</label><br>\
-<input type="submit" name="submit">\
+<input type="submit" name="submit" value="login">\
 </form></center>';
+
+//
+//<input type="hidden" name="save" value="OFF">\
+//Save login info: <label><input type="radio" name="save" value="ON" checked="checked">Yes</label> <label><input type="radio" name="save" value="OFF">No</label><br>\
     }
   }
 }
@@ -525,6 +582,11 @@ if (document.location.href.match(/\/city\.php$/)) {
   HTMLSettings();
 }
 
+// add User Interface to the travek agency (price changes)
+if (document.location.href.match(/\/travelagency\.php$/)) {
+  //DRUGSettings();
+}
+
 // increase size of text box for profile signature
 if (document.location.href.match(/\/preferences\.php\?action=psig$/)) {
   var INPUTs = document.getElementsByTagName('textarea');
@@ -540,13 +602,12 @@ var timeMBar;
 var timeSBar;
 if ((addRefillBars == '1') || (replaceTickingClock == '1')) {
   var timeArray = document.body.innerHTML.match(/(\d\d):(\d\d):(\d\d)/);
-  if (timeArray) {
-    timeHBar = 1 * timeArray[1];
-    timeMBar = 1 * timeArray[2];
-    timeSBar = 1 * timeArray[3];
-  }
+  timeHBar = 1 * timeArray[1];
+  timeMBar = 1 * timeArray[2];
+  timeSBar = 1 * timeArray[3];
 }
-if ((replaceTickingClock == '1') && (document.location.href.match(/\/index\.php$/)) && (document.body.getAttribute('bgcolor') == '#cccccc')) {
+
+if ((replaceTickingClock == '1') && (document.location.href.match(/\/index.php$/)) && (document.body.getAttribute('bgcolor') == '#cccccc')) {
   var systemTime = new Date();
   var offsetH = systemTime.getHours() - timeHBar;
   var offsetM = systemTime.getMinutes() - timeMBar;
@@ -556,7 +617,7 @@ if ((replaceTickingClock == '1') && (document.location.href.match(/\/index\.php$
   setGMValue('tmp', 'offsetS', offsetS);
 }
 
-  // increase size of chat box in poker
+// increase size of chat box in poker
 if (document.location.href.match(/\/poker1\.php/)) {
   var chatBox = document.getElementById('Layer1');
   if (chatBox) {
@@ -569,13 +630,23 @@ if (document.location.href.match(/\/poker1\.php/)) {
     if (refreshButtons.length == 1) {
       var refreshButton = refreshButtons[0];
       if (refreshButton.getAttribute('value') == 'Refresh') {
-        var secs = 0;
-        var timeoutID;
-        var updateButton = function(btn) {
-          ++secs;
-          btn.setAttribute('value', 'Refresh (' + secs + ' second' + ((secs == 1)?(''):('s')) + ')');
-        };
-        timeoutID = window.setInterval(updateButton, 1000, refreshButton);
+        var secs = 1 * pokerTimeout;
+        if ((10 <= secs) && (secs <= 55)) {
+          var timeoutID;
+          var updateButton = function(btn) {
+            --secs;
+            btn.setAttribute('value', 'Please wait... (' + secs + ' second' + ((secs == 1)?(''):('s')) + ')');
+          };
+          var enableButton = function(btn) {
+            window.clearTimeout(timeoutID);
+            btn.removeAttribute('disabled');
+            btn.setAttribute('value', 'Refresh');
+          };
+          refreshButton.setAttribute('disabled', 'disabled');
+          refreshButton.setAttribute('value', 'Please wait... (' + secs + ' seconds)');
+          window.setTimeout(enableButton, secs*1000-1, refreshButton);
+          timeoutID = window.setInterval(updateButton, 1000, refreshButton);
+        }
       }
     }
   }
@@ -610,7 +681,7 @@ for (var i=0; i<TDs.length; ++i) {
       TDs[i].parentNode.setAttribute('bgcolor', colourDP);
     }
   }
-  if (TDs[i].innerHTML.match(/^\[<a href="jail1\.php\?XID=\d+&amp;action=breakout/)) {
+  if (TDs[i].innerHTML.match(/jail1\.php\?XID=\d+&amp;action=breakout/)) {
     ++busted;
   }
   if (TDs[i].innerHTML.match(/^Was caught trying to break <a[^>]+>[^<]+<\/a> out of jail\.$/)) {
@@ -663,14 +734,14 @@ for (var i=0; i<TDs.length; ++i) {
         t.innerHTML += ' (nerve: 2)';
       }
       if (t.innerHTML == 'Selling illegal products') {
-        t.innerHTML += ' (nerve: 3, 16)';
+        t.innerHTML += ' (nerve: 3)';
       }
       if (t.innerHTML == 'Theft') {
-        t.innerHTML += ' (nerve: 4, 5, 6, 7, 15)';
+        t.innerHTML += ' (nerve: 4, 5, 6, 7)';
         arr = arrayThefts;
       }
       if (t.innerHTML == 'Computer crimes') {
-        t.innerHTML += ' (nerve: 9, 18)';
+        t.innerHTML += ' (nerve: 9)';
         arr = arrayVirus;
       }
       if (t.innerHTML == 'Murder') {
@@ -682,7 +753,7 @@ for (var i=0; i<TDs.length; ++i) {
         arr = arrayDrugs;
       }
       if (t.innerHTML == 'Fraud crimes') {
-        t.innerHTML += ' (nerve: 11, 13, 14, 17)';
+        t.innerHTML += ' (nerve: 11, 13, 14)';
         arr = arrayFraud;
       }
       if (t.innerHTML == 'Auto theft') {
@@ -776,11 +847,31 @@ if (onItemPage || onAuctionPage) {
       for (var ii=0; ii<rows.length; ++ii) {
         var lastRow = (ii == rows.length - 1);
         if (applyColourDP == '0') {
-          rows[ii].setAttribute('bgcolor', '#dfdfdf');
           if (ii % 2) {
             rows[ii].setAttribute('bgcolor', '#cccccc');
           }
+          else 
+          { 
+            rows[ii].setAttribute('bgcolor', '#dfdfdf');
+          }
         }
+        else
+        {
+          if (rows[ii].innerHTML.match(/Donator Pack/))
+            rows[ii].setAttribute('bgcolor', colourDP);
+          else
+          {
+            if (ii % 2) {
+              rows[ii].setAttribute('bgcolor', '#cccccc');
+            }
+            else 
+            { 
+              rows[ii].setAttribute('bgcolor', '#dfdfdf');
+            }
+          }
+        }
+
+        
         var thisGroup = rows[ii].getElementsByTagName('td')[1].innerHTML;
         if (onItemPage && (TRs[0].getElementsByTagName('td')[0].innerHTML == '<font color="#000066"><b>Name</b></font>')) {
           if (thisGroup != lastGroup) {
@@ -922,6 +1013,26 @@ if (onIMarketPage) {
   TRs[0].addEventListener('click', swapHiddenStatus, true);
 }
 
+var FONTs = document.getElementsByTagName('font');
+for (var i=0; i<FONTs.length; i++) {
+    var newSpan = document.createElement('span');
+    newSpan.setAttribute('id', 'clock');
+
+    if (clockPos == 0) {
+      if (i == 1) {
+        FONTs[i].parentNode.insertBefore(newSpan, FONTs[i].previousSibling);
+        FONTs[i].parentNode.insertBefore(document.createElement('br'), FONTs[i].previousSibling);
+      }
+    }
+    else if (clockPos == 1) {
+      if (FONTs[i].innerHTML.match(/Areas/)) {
+        FONTs[i].parentNode.insertBefore(newSpan, FONTs[i].previousSibling);
+        FONTs[i].parentNode.insertBefore(document.createElement('br'), FONTs[i].previousSibling);
+        FONTs[i].parentNode.insertBefore(document.createElement('br'), FONTs[i].previousSibling);
+      }
+    }
+}
+
 var CITY_done = false;
 var MAIL_done = false;
 var CRMS_done = false;
@@ -934,7 +1045,12 @@ var GYM_done = false;
 var LINKs = document.getElementsByTagName('a');
 for (var i=0; i<LINKs.length; ++i) {
   if (LINKs[i].hasAttribute('href')) {
-    if (!GYM_done && (LINKs[i].getAttribute('href') == 'gym.php')) {
+    var indent = document.createElement('span');
+    indent.innerHTML = '&nbsp;|&nbsp;';
+    var indent2 = document.createElement('span');
+    indent2.innerHTML = '&nbsp;&nbsp;&nbsp;&nbsp;';
+
+    if (!GYM_done && (LINKs[i].getAttribute('href') == '/gym.php')) {
       if ((addLink_jailItems == '1') && (LINKs[i].innerHTML == 'Jail Gym') && (document.body.getAttribute('bgcolor') == '#cd853f')) {
         var newItemLink = document.createElement('a');
         newItemLink.href = 'item.php';
@@ -949,66 +1065,138 @@ for (var i=0; i<LINKs.length; ++i) {
         GYM_done = true;
       }
     }
-    if (!CITY_done && (LINKs[i].getAttribute('href') == 'city.php')) {
+    if (!CITY_done && (LINKs[i].getAttribute('href') == '/city.php')) {
+      var lnkTotal = 0;
+      if (addLink_hof == '1')
+        lnkTotal++;
+      if (addLink_bank == '1')
+        lnkTotal++;
+      if (addLink_smarket == '1')
+        lnkTotal++;
+      if (addLink_ahouse == '1')
+        lnkTotal++;
+      if (addLink_imarket == '1')
+        lnkTotal++;
+      if (addLink_pmarket == '1')
+        lnkTotal++;
+      if (addLink_notepad == '1')
+        lnkTotal++;
+
       if (addLink_hof == '1') {
         var HOFLink = document.createElement('a');
         HOFLink.setAttribute('href', '/halloffame.php');
         HOFLink.innerHTML = 'HoF';
         LINKs[i].parentNode.insertBefore(HOFLink, LINKs[i].nextSibling);
-        var indent = document.createElement('span');
-        indent.innerHTML = '&nbsp; &nbsp; ==&gt; ';
-        LINKs[i].parentNode.insertBefore(indent, LINKs[i].nextSibling);
-        LINKs[i].parentNode.insertBefore(document.createElement('br'), LINKs[i].nextSibling);
+        LINKs[i].parentNode.insertBefore(indent.cloneNode(true), LINKs[i].nextSibling);
+        if (lnkTotal % 2 == 0){
+          LINKs[i].parentNode.insertBefore(indent2.cloneNode(true), LINKs[i].nextSibling);
+          LINKs[i].parentNode.insertBefore(document.createElement('br'), LINKs[i].nextSibling);
+        }
+        lnkTotal--;
+      }
+      if (addLink_bank == '1') {
+        var NPLink = document.createElement('a');
+        NPLink.setAttribute('href', '/bank.php');
+        NPLink.innerHTML = 'Bank';
+        LINKs[i].parentNode.insertBefore(NPLink, LINKs[i].nextSibling);
+        LINKs[i].parentNode.insertBefore(indent.cloneNode(true), LINKs[i].nextSibling);
+        if (lnkTotal % 2 == 0){
+          LINKs[i].parentNode.insertBefore(indent2.cloneNode(true), LINKs[i].nextSibling);
+          LINKs[i].parentNode.insertBefore(document.createElement('br'), LINKs[i].nextSibling);
+        }
+        lnkTotal--;
+      }
+      if (addLink_smarket == '1') {
+        var NPLink = document.createElement('a');
+        NPLink.setAttribute('href', '/stockexchange.php');
+        NPLink.innerHTML = 'Stock Market';
+        LINKs[i].parentNode.insertBefore(NPLink, LINKs[i].nextSibling);
+        LINKs[i].parentNode.insertBefore(indent.cloneNode(true), LINKs[i].nextSibling);
+        if (lnkTotal % 2 == 0){
+          LINKs[i].parentNode.insertBefore(indent2.cloneNode(true), LINKs[i].nextSibling);
+          LINKs[i].parentNode.insertBefore(document.createElement('br'), LINKs[i].nextSibling);
+        }
+        lnkTotal--;
+      }
+      if (addLink_ahouse == '1') {
+        var NPLink = document.createElement('a');
+        NPLink.setAttribute('href', '/amarket.php');
+        NPLink.innerHTML = 'Auction House';
+        LINKs[i].parentNode.insertBefore(NPLink, LINKs[i].nextSibling);
+        LINKs[i].parentNode.insertBefore(indent.cloneNode(true), LINKs[i].nextSibling);
+        if (lnkTotal % 2 == 0){
+          LINKs[i].parentNode.insertBefore(indent2.cloneNode(true), LINKs[i].nextSibling);
+          LINKs[i].parentNode.insertBefore(document.createElement('br'), LINKs[i].nextSibling);
+        }
+        lnkTotal--;
+      }
+      if (addLink_imarket == '1') {
+        var NPLink = document.createElement('a');
+        NPLink.setAttribute('href', '/imarket.php?');
+        NPLink.innerHTML = 'Item Market';
+        LINKs[i].parentNode.insertBefore(NPLink, LINKs[i].nextSibling);
+        LINKs[i].parentNode.insertBefore(indent.cloneNode(true), LINKs[i].nextSibling);
+        if (lnkTotal % 2 == 0){
+          LINKs[i].parentNode.insertBefore(indent2.cloneNode(true), LINKs[i].nextSibling);
+          LINKs[i].parentNode.insertBefore(document.createElement('br'), LINKs[i].nextSibling);
+        }
+        lnkTotal--;
+      }
+      if (addLink_pmarket == '1') {
+        var NPLink = document.createElement('a');
+        NPLink.setAttribute('href', '/pmarket.php?');
+        NPLink.innerHTML = 'Points Market';
+        LINKs[i].parentNode.insertBefore(NPLink, LINKs[i].nextSibling);
+        LINKs[i].parentNode.insertBefore(indent.cloneNode(true), LINKs[i].nextSibling);
+        if (lnkTotal % 2 == 0){
+          LINKs[i].parentNode.insertBefore(indent2.cloneNode(true), LINKs[i].nextSibling);
+          LINKs[i].parentNode.insertBefore(document.createElement('br'), LINKs[i].nextSibling);
+        }
+        lnkTotal--;
       }
       if (addLink_notepad == '1') {
         var NPLink = document.createElement('a');
         NPLink.setAttribute('href', '/notebook.php');
         NPLink.innerHTML = 'Notepad';
         LINKs[i].parentNode.insertBefore(NPLink, LINKs[i].nextSibling);
-        var indent = document.createElement('span');
-        indent.innerHTML = '&nbsp; &nbsp; ==&gt; ';
-        LINKs[i].parentNode.insertBefore(indent, LINKs[i].nextSibling);
-        LINKs[i].parentNode.insertBefore(document.createElement('br'), LINKs[i].nextSibling);
+        LINKs[i].parentNode.insertBefore(indent.cloneNode(true), LINKs[i].nextSibling);
+        if (lnkTotal % 2 == 0){
+          LINKs[i].parentNode.insertBefore(indent2.cloneNode(true), LINKs[i].nextSibling);
+          LINKs[i].parentNode.insertBefore(document.createElement('br'), LINKs[i].nextSibling);
+        }
+        lnkTotal--;
       }
       if (addLink_gothere == '1') {
         LINKs[i].innerHTML += ' <b>&lt;== go there &lt;==</b>';
       }
       CITY_done = true;
     }
-    if (!MAIL_done && (LINKs[i].getAttribute('href') == 'messages.php') && (addLink_outbox == '1')) {
+    if (!MAIL_done && (LINKs[i].getAttribute('href') == '/messages.php') && (hideLink_mail =='0') && (addLink_outbox == '1')) {
       var OBLink = document.createElement('a');
       OBLink.setAttribute('href', 'messages.php?action=outbox');
       OBLink.innerHTML = 'Outbox';
       LINKs[i].parentNode.insertBefore(OBLink, LINKs[i].nextSibling);
-      var indent = document.createElement('span');
-      indent.innerHTML = '&nbsp; &nbsp;==&gt; ';
       LINKs[i].parentNode.insertBefore(indent, LINKs[i].nextSibling);
-      LINKs[i].parentNode.insertBefore(document.createElement('br'), LINKs[i].nextSibling);
       MAIL_done = true;
     }
-    if (!CRMS_done && (LINKs[i].getAttribute('href') == 'crimes.php') && (addLink_offences == '1')) {
+    if (!CRMS_done && (LINKs[i].getAttribute('href') == '/crimes.php') && (hideLink_crimes =='0') && (addLink_offences == '1')) {
       var CRLink = document.createElement('a');
       CRLink.setAttribute('href', 'criminalrecords.php');
       CRLink.innerHTML = 'Offences';
       LINKs[i].parentNode.insertBefore(CRLink, LINKs[i].nextSibling);
-      var indent = document.createElement('span');
-      indent.innerHTML = '&nbsp; &nbsp;==&gt; ';
       LINKs[i].parentNode.insertBefore(indent, LINKs[i].nextSibling);
-      LINKs[i].parentNode.insertBefore(document.createElement('br'), LINKs[i].nextSibling);
+
       CRMS_done = true;
     }
-    if (!SRCH_done && (LINKs[i].getAttribute('href') == 'search.php') && (addLink_advanced == '1')) {
+    if (!SRCH_done && (LINKs[i].getAttribute('href') == '/search.php') && (hideLink_search =='0') && (addLink_advanced == '1')) {
       var ADVLink = document.createElement('a');
       ADVLink.setAttribute('href', 'advsearch.php');
       ADVLink.innerHTML = 'Advanced';
       LINKs[i].parentNode.insertBefore(ADVLink, LINKs[i].nextSibling);
-      var indent = document.createElement('span');
-      indent.innerHTML = '&nbsp; &nbsp;==&gt; ';
       LINKs[i].parentNode.insertBefore(indent, LINKs[i].nextSibling);
-      LINKs[i].parentNode.insertBefore(document.createElement('br'), LINKs[i].nextSibling);
       SRCH_done = true;
     }
-    if (!FRND_done && (LINKs[i].getAttribute('href') == 'friendlist.php') && (addLink_friendsAdv == '1')) {
+    if (!FRND_done && (LINKs[i].getAttribute('href') == 'friendlist.php') && (hideLink_friends =='0') && (addLink_friendsAdv == '1')) {
       var ADVLink = document.createElement('a');
       ADVLink.setAttribute('href', 'friendlist.php?step=adv');
       ADVLink.innerHTML = 'Advanced';
@@ -1016,7 +1204,7 @@ for (var i=0; i<LINKs.length; ++i) {
       LINKs[i].parentNode.insertBefore(document.createTextNode(' | '), LINKs[i].nextSibling);
       FRND_done = true;
     }
-    if (!ENMY_done && (LINKs[i].getAttribute('href') == 'blacklist.php') && (addLink_enemiesAdv == '1')) {
+    if (!ENMY_done && (LINKs[i].getAttribute('href') == 'blacklist.php') && (hideLink_blackl =='0') && (addLink_enemiesAdv == '1')) {
       var ADVLink = document.createElement('a');
       ADVLink.setAttribute('href', 'blacklist.php?step=adv');
       ADVLink.innerHTML = 'Advanced';
@@ -1024,9 +1212,23 @@ for (var i=0; i<LINKs.length; ++i) {
       LINKs[i].parentNode.insertBefore(document.createTextNode(' | '), LINKs[i].nextSibling);
       ENMY_done = true;
     }
-    if (!FCTN_done && (LINKs[i].getAttribute('href') == 'factions.php?step=your')) {
-      var indent = document.createElement('span');
-      indent.innerHTML = '&nbsp; &nbsp;==&gt; ';
+    if (!FCTN_done && (hideLink_faction =='0') && (LINKs[i].getAttribute('href') == '/factions.php?step=your')) {
+      var lnkTotal = 0;
+      if (addLink_facCrime == '1')
+        lnkTotal++;
+      if (addLink_facForum == '1')
+        lnkTotal++;
+      if (addLink_facMembers == '1')
+        lnkTotal++;
+      if (addLink_facWarBase == '1')
+        lnkTotal++;
+      if (addLink_facInfo == '1')
+        lnkTotal++;
+      if (addLink_facStaff == '1')
+        lnkTotal++;
+      if (addLink_facAttacks == '1')
+        lnkTotal++;
+
 
       if (addLink_facCrime == '1') {
         var OCLink = document.createElement('a');
@@ -1034,16 +1236,27 @@ for (var i=0; i<LINKs.length; ++i) {
         OCLink.innerHTML = 'Organised Crime';
         LINKs[i].parentNode.insertBefore(OCLink, LINKs[i].nextSibling);
         LINKs[i].parentNode.insertBefore(indent, LINKs[i].nextSibling);
-        LINKs[i].parentNode.insertBefore(document.createElement('br'), LINKs[i].nextSibling);
+        if (lnkTotal % 2 == 0){
+          LINKs[i].parentNode.insertBefore(indent2.cloneNode(true), LINKs[i].nextSibling);
+          LINKs[i].parentNode.insertBefore(document.createElement('br'), LINKs[i].nextSibling);
+        }
+        lnkTotal--;
       }
 
       if (addLink_facForum == '1') {
+
         var ForumLink = document.createElement('a');
-        ForumLink.setAttribute('href', 'forums.php?forumID=999&factionID=8216');
+	//http://www.torncity.com/forums.php?forumID=999&factionID=7095
+	ForumLink.setAttribute('href', 'forums.php?forumID=' + facForumID + '&factionID=' + facID);
+        //ForumLink.setAttribute('href', 'factions.php?step=your&action=forum');
         ForumLink.innerHTML = 'Forum';
         LINKs[i].parentNode.insertBefore(ForumLink, LINKs[i].nextSibling);
         LINKs[i].parentNode.insertBefore(indent.cloneNode(true), LINKs[i].nextSibling);
-        LINKs[i].parentNode.insertBefore(document.createElement('br'), LINKs[i].nextSibling);
+        if (lnkTotal % 2 == 0){
+          LINKs[i].parentNode.insertBefore(indent2.cloneNode(true), LINKs[i].nextSibling);
+          LINKs[i].parentNode.insertBefore(document.createElement('br'), LINKs[i].nextSibling);
+        }
+        lnkTotal--;
       }
 
       if (addLink_facMembers == '1') {
@@ -1052,7 +1265,11 @@ for (var i=0; i<LINKs.length; ++i) {
         MembersLink.innerHTML = 'Members';
         LINKs[i].parentNode.insertBefore(MembersLink, LINKs[i].nextSibling);
         LINKs[i].parentNode.insertBefore(indent.cloneNode(true), LINKs[i].nextSibling);
-        LINKs[i].parentNode.insertBefore(document.createElement('br'), LINKs[i].nextSibling);
+        if (lnkTotal % 2 == 0){
+          LINKs[i].parentNode.insertBefore(indent2.cloneNode(true), LINKs[i].nextSibling);
+          LINKs[i].parentNode.insertBefore(document.createElement('br'), LINKs[i].nextSibling);
+        }
+        lnkTotal--;
       }
 
       if (addLink_facWarBase == '1') {
@@ -1061,7 +1278,11 @@ for (var i=0; i<LINKs.length; ++i) {
         warBaseLink.innerHTML = 'War Base';
         LINKs[i].parentNode.insertBefore(warBaseLink, LINKs[i].nextSibling);
         LINKs[i].parentNode.insertBefore(indent.cloneNode(true), LINKs[i].nextSibling);
-        LINKs[i].parentNode.insertBefore(document.createElement('br'), LINKs[i].nextSibling);
+        if (lnkTotal % 2 == 0){
+          LINKs[i].parentNode.insertBefore(indent2.cloneNode(true), LINKs[i].nextSibling);
+          LINKs[i].parentNode.insertBefore(document.createElement('br'), LINKs[i].nextSibling);
+        }
+        lnkTotal--;
       }
 
       if (addLink_facInfo == '1') {
@@ -1070,7 +1291,11 @@ for (var i=0; i<LINKs.length; ++i) {
         infoLink.innerHTML = 'Information';
         LINKs[i].parentNode.insertBefore(infoLink, LINKs[i].nextSibling);
         LINKs[i].parentNode.insertBefore(indent.cloneNode(true), LINKs[i].nextSibling);
-        LINKs[i].parentNode.insertBefore(document.createElement('br'), LINKs[i].nextSibling);
+        if (lnkTotal % 2 == 0){
+          LINKs[i].parentNode.insertBefore(indent2.cloneNode(true), LINKs[i].nextSibling);
+          LINKs[i].parentNode.insertBefore(document.createElement('br'), LINKs[i].nextSibling);
+        }
+        lnkTotal--;
       }
 
       if (addLink_facStaff == '1') {
@@ -1079,7 +1304,11 @@ for (var i=0; i<LINKs.length; ++i) {
         staffLink.innerHTML = 'Staff Room';
         LINKs[i].parentNode.insertBefore(staffLink, LINKs[i].nextSibling);
         LINKs[i].parentNode.insertBefore(indent.cloneNode(true), LINKs[i].nextSibling);
-        LINKs[i].parentNode.insertBefore(document.createElement('br'), LINKs[i].nextSibling);
+        if (lnkTotal % 2 == 0){
+          LINKs[i].parentNode.insertBefore(indent2.cloneNode(true), LINKs[i].nextSibling);
+          LINKs[i].parentNode.insertBefore(document.createElement('br'), LINKs[i].nextSibling);
+        }
+        lnkTotal--;
       }
 
       if (addLink_facAttacks == '1') {
@@ -1087,20 +1316,27 @@ for (var i=0; i<LINKs.length; ++i) {
         attacksLink.setAttribute('href', 'factions.php?step=your&news=2');
         attacksLink.innerHTML = 'attacks';
         LINKs[i].parentNode.insertBefore(attacksLink, LINKs[i].nextSibling);
-        LINKs[i].parentNode.insertBefore(document.createTextNode(' | '), LINKs[i].nextSibling);
+        LINKs[i].parentNode.insertBefore(indent.cloneNode(true), LINKs[i].nextSibling);
+        if (lnkTotal % 2 == 0){
+          LINKs[i].parentNode.insertBefore(indent2.cloneNode(true), LINKs[i].nextSibling);
+          LINKs[i].parentNode.insertBefore(document.createElement('br'), LINKs[i].nextSibling);
+        }
+        lnkTotal--;
       }
 
       FCTN_done = true;
     }
-    if (!TIME_done && (LINKs[i].getAttribute('href') == 'playerreport.php')) {
+    if (!TIME_done && (LINKs[i].getAttribute('href') == '/playerreport.php')) {
       if (replaceTickingClock == '1') {
         var timeNode = LINKs[i].previousSibling;
         var maxSearchCount = 9;
         while ((maxSearchCount > 0) && !timeNode.textContent.match(/\d\d:\d\d:\d\d/)) {
           --maxSearchCount;
+
           timeNode = timeNode.previousSibling;
         }
-        if ((maxSearchCount == 3) && timeNode.textContent.match(/\d\d:\d\d:\d\d/)) {
+
+        if ((maxSearchCount == 1) && timeNode.textContent.match(/\d\d:\d\d:\d\d/)) {
           var addASecond = function(spanElement) {
             var h = 1 * spanElement.innerHTML.substr(0, 2);
             var m = 1 * spanElement.innerHTML.substr(3, 2);
@@ -1119,7 +1355,7 @@ for (var i=0; i<LINKs.length; ++i) {
             }
             spanElement.innerHTML = ('0'+h).substr(-2, 2) + ':' + ('0'+m).substr(-2, 2) + ':' + ('0'+s).substr(-2, 2);
           };
-          // var timeArray = timeNode.textContent.match(/(\d\d):(\d\d):(\d\d)/);
+          var timeArray = timeNode.textContent.match(/(\d\d):(\d\d):(\d\d)/);
           var systemTime = new Date();
           var timeH = (systemTime.getHours()) - (1 * readGMValue('tmp', 'offsetH', '0', true));
           var timeM = (systemTime.getMinutes()) - (1 * readGMValue('tmp', 'offsetM', '0', true));
@@ -1143,13 +1379,23 @@ for (var i=0; i<LINKs.length; ++i) {
             timeM -= 60;
             timeH += 1;
           }
+
+          timeH += (1 * timeZoneAdj);
+
           while (timeH >= 24) {
             timeH -= 24;
           }
           var newTimeSpan = document.createElement('span');
           newTimeSpan.innerHTML = ('0'+timeH).substr(-2, 2) + ':' + ('0'+timeM).substr(-2, 2) + ':' + ('0'+timeS).substr(-2, 2);
           timeNode.textContent = timeNode.textContent.replace(/[0-9:]/g, '');
-          timeNode.parentNode.insertBefore(newTimeSpan, timeNode.nextSibling);
+
+          if ((clockPos == 0) || (clockPos == 1)) {
+            var clockPos2 = document.getElementById('clock');
+            clockPos2.parentNode.insertBefore(newTimeSpan, clockPos2.nextSibling);
+          }
+          else
+            timeNode.parentNode.insertBefore(newTimeSpan, timeNode.nextSibling);
+
           window.setInterval(addASecond, 999, newTimeSpan);
         }
       }
@@ -1158,7 +1404,7 @@ for (var i=0; i<LINKs.length; ++i) {
 
     if (LINKs[i].getAttribute('href').match(/^jail1\.php\?XID=\d+&action=breakout$/)) {
       if (
-            (document.location.href.match(/\/jailview\.php*/))
+            (document.location.href.match(/\/jailview\.php|jailview\.php\?start=([0-9]+)$/))
             ||
             ((document.location.href.match(/\/index\.php$/)) && (document.body.hasAttribute('bgcolor') && (document.body.getAttribute('bgcolor') == '#cd853f')))
          ) {
@@ -1169,19 +1415,21 @@ for (var i=0; i<LINKs.length; ++i) {
           // reformat time left in jail
           var timeLeftCell = LINKs[i].parentNode.parentNode.getElementsByTagName('td')[2];
           var timeLeft = timeLeftCell.innerHTML;
-          var timeLeftArray = timeLeft.match(/(?:(\d+) hrs ?)?(?:(\d+) mins)?(?: ?(\d+) secs)?/);
-          var timeLeftH = 1 * timeLeftArray[1];
-          if (isNaN(timeLeftH)) timeLeftH = 0;
-          var timeLeftM = 1 * timeLeftArray[2];
-          if (isNaN(timeLeftM)) timeLeftM = 0;
-          var timeLeftS = 1 * timeLeftArray[3];
-          if (isNaN(timeLeftS)) timeLeftS = 0;
+          var timeLeftArray = timeLeft.match(/(\d+)/g);
+          var timeLeftH;
+          var timeLeftM;
+          if (timeLeftArray.length == 2) {
+            timeLeftH = 1 * timeLeftArray[0];
+            timeLeftM = 1 * timeLeftArray[1];
+          } else {
+            timeLeftH = 0;
+            timeLeftM = 1 * timeLeftArray[0];
+          }
           var timeLeftMinutes = timeLeftH * 60 + timeLeftM;
           timeLeftCell.innerHTML = '';
           //timeLeftCell.innerHTML += timeLeftCell.innerHTML.replace(' ', '&nbsp;', 'g');
           //timeLeftCell.innerHTML += '<br>(';
           timeLeftCell.innerHTML += timeLeftMinutes + '&nbsp;mins';
-          if (timeLeftS) timeLeftCell.innerHTML += '&nbsp;' + timeLeftS + '&nbsp;secs';
           //timeLeftCell.innerHTML += ')';
         }
         if (applyColourGoodLevel == '1') {
@@ -1196,8 +1444,10 @@ for (var i=0; i<LINKs.length; ++i) {
 
     // remove less useful links from left menu
     for (var k=0; k<uselessLinks.length; ++k) {
+	//GM_log(uselessLinks[k][0]+' '+uselessLinks[k][1]+' '+uselessLinks[k][2]);
       if (uselessLinks[k][2] != '0') {
         if (LINKs[i].getAttribute('href').match(uselessLinks[k][0])) {
+//GM_log(uselessLinks[k][0]);
           --uselessLinks[k][1];
           if (uselessLinks[k][1] == 0) hideUselessLink(LINKs[i]);
         }
@@ -1210,7 +1460,7 @@ for (var i=0; i<LINKs.length; ++i) {
       var IMGs = document.getElementsByTagName('img');
       for (var jjj=0; jjj<IMGs.length; ++jjj) {
         if (IMGs[jjj].hasAttribute('title')) {
-          var jobRX = /^Working in (?:the )?(.*) ~ Rank: (.*)$/;
+          var jobRX = /^Working in the (.*) ~ Rank: (.*)$/;
           if (IMGs[jjj].getAttribute('title').match(jobRX)) {
             var jobtype = RegExp.$1;
             var jobrank = RegExp.$2;
@@ -1219,6 +1469,16 @@ for (var i=0; i<LINKs.length; ++i) {
         }
       }
       LINKs[i].parentNode.insertBefore(document.createTextNode(' (' + jp + ' job points)'), LINKs[i].nextSibling);
+    }
+
+    //add faction data 
+    if (LINKs[i].getAttribute('href').match(/^forums\.php\?forumID=\d+&factionID=\d+$/)) {
+
+      facData = LINKs[i].getAttribute('href').match(/^forums\.php\?forumID=(\d+)&factionID=(\d+)$/);
+
+      setGMValue('cfg', 'facForumID', facData[1]);
+      setGMValue('cfg', 'facID', facData[2]);
+
     }
   }
 }
@@ -1275,7 +1535,6 @@ var priFontNode = null;
 var secFontNode = null;
 var melFontNode = null;
 var armFontNode = null;
-var fontsFound = 0;
 var FONTs = document.getElementsByTagName('font');
 for (var i=0; i<FONTs.length; ++i) {
   if (FONTs[i].hasAttribute('color')) {
@@ -1292,12 +1551,10 @@ for (var i=0; i<FONTs.length; ++i) {
         var numbers = FONTs[i].innerHTML.match(/\s*((\d+,)*(\d+))\/((\d+,)*(\d+))\s*/);
         var currentLength = 1 * numbers[1].replace(/\D/g, '');
         var totalLength = 1 * numbers[4].replace(/\D/g, '');
-		
 		//Remove the <br> tag from inside the "Happy" <font> tag
 		if (barType == 'Happy:') {
 			FONTs[i].innerHTML = currentLength.toString() + '/' + totalLength.toString();
 		}
-		
         switch (barType) {
           case 'Energy:': addBarTime(totalLength - currentLength, 5, (donator)?(10):(15), timeHBar, timeMBar, FONTs[i]); break;
           case 'Happy:': addBarTime(totalLength - currentLength, 5, 15, timeHBar, timeMBar, FONTs[i]); break;
@@ -1325,10 +1582,12 @@ for (var i=0; i<FONTs.length; ++i) {
     }
 
     // calculate Battle stats percentages
-    if (FONTs[i].getAttribute('color') == '#ff0000') {
+    //if (FONTs[i].getAttribute('color') == '#b57400') {
       if ((addBattlePercs == '1') || (addWeaponMults == '1')) {
-        if (FONTs[i].innerHTML.match(/^\s*(\d+,)*\d+\.\d+\s*(<br>)?$/)) {
+	//alert(FONTs[i].innerHTML.match(/^\s*<b>(\d+,)*\d+\.\d+<\/b>\s*(<br>)?$/));
+        if (FONTs[i].innerHTML.match(/^\s*<b>(\d+,)*\d+\.\d+<\/b>\s*(<br>)?$/)) {
           if (FONTs[i].previousSibling.textContent.match(/Speed:/)) {
+
             speedFontNode = FONTs[i];
             speedValue = 1 * FONTs[i].innerHTML.replace(/[^0-9.]/g, '');
           }
@@ -1353,22 +1612,18 @@ for (var i=0; i<FONTs.length; ++i) {
       if (addWeaponMults == '1') {
         if (FONTs[i].previousSibling && (FONTs[i].previousSibling.textContent.match(/^\s*Primary Weapon:\s*$/))) {
           priFontNode = FONTs[i];
-	  ++fontsFound;
         }
         if (FONTs[i].previousSibling && (FONTs[i].previousSibling.textContent.match(/^\s*Secondary Weapon:\s*$/))) {
           secFontNode = FONTs[i];
-	  ++fontsFound;
         }
         if (FONTs[i].previousSibling && (FONTs[i].previousSibling.textContent.match(/^\s*Melee Weapon:\s*$/))) {
           melFontNode = FONTs[i];
-	  ++fontsFound;
         }
         if (FONTs[i].previousSibling && (FONTs[i].previousSibling.textContent.match(/^\s*Armour:\s*$/))) {
           armFontNode = FONTs[i];
-	  ++fontsFound;
         }
       }
-    }
+    //}
 
     // add number of bust to successful bust
     if (FONTs[i].getAttribute('color') == '#000000') {
@@ -1376,6 +1631,8 @@ for (var i=0; i<FONTs.length; ++i) {
         if (FONTs[i].innerHTML.match(/<br>You busted [0-9a-zA-Z_-]+ out of jail\.<br>/)) {
           FONTs[i].innerHTML = FONTs[i].innerHTML.replace(/(<br>You busted \w+ out of jail\.<br>)/,
                 '$1You have now done (at least) ' + (1 * readGMValue('tmp', 'bustCount', 0, true) + 1) + ' busts.<br>');
+          var bustedV = (1 * readGMValue('tmp', 'bustCount', 0, true) + 1);
+          setGMValue('tmp', 'bustCount', bustedV);
         }
       }
     }
@@ -1404,40 +1661,34 @@ if (addBattlePercs == '1') {
   }
 }
 
-if (addWeaponMults && (fontsFound == 4)) {
-  if (priFontNode) {
+if (addWeaponMults) {
+  if (priFontNode && secFontNode && melFontNode && armFontNode) {
     var priMult = document.createElement('font');
     priMult.color = 'blue';
     priMult.innerHTML = ' (';
     priMult.innerHTML += strengthValue + ' x ' + weaponArray['pri'][priFontNode.textContent.replace(/[^a-z0-9]/ig, '')] + ' = ';
-    priMult.innerHTML += fmtDecimalNumber(strengthValue * weaponArray['pri'][priFontNode.textContent.replace(/[^a-z0-9]/ig, '')]);
+    priMult.innerHTML += (strengthValue * weaponArray['pri'][priFontNode.textContent.replace(/[^a-z0-9]/ig, '')]);
     priMult.innerHTML += ')';
     priFontNode.insertBefore(priMult, priFontNode.lastChild);
-  }
-  if (secFontNode) {
     var secMult = document.createElement('font');
     secMult.color = 'blue';
     secMult.innerHTML = ' (';
     secMult.innerHTML += strengthValue + ' x ' + weaponArray['sec'][secFontNode.textContent.replace(/[^a-z0-9]/ig, '')] + ' = ';
-    secMult.innerHTML += fmtDecimalNumber(strengthValue * weaponArray['sec'][secFontNode.textContent.replace(/[^a-z0-9]/ig, '')]);
+    secMult.innerHTML += (strengthValue * weaponArray['sec'][secFontNode.textContent.replace(/[^a-z0-9]/ig, '')]);
     secMult.innerHTML += ')';
     secFontNode.insertBefore(secMult, secFontNode.lastChild);
-  }
-  if (melFontNode) {
     var melMult = document.createElement('font');
     melMult.color = 'blue';
     melMult.innerHTML = ' (';
     melMult.innerHTML += strengthValue + ' x ' + weaponArray['mel'][melFontNode.textContent.replace(/[^a-z0-9]/ig, '')] + ' = ';
-    melMult.innerHTML += fmtDecimalNumber(strengthValue * weaponArray['mel'][melFontNode.textContent.replace(/[^a-z0-9]/ig, '')]);
+    melMult.innerHTML += (strengthValue * weaponArray['mel'][melFontNode.textContent.replace(/[^a-z0-9]/ig, '')]);
     melMult.innerHTML += ')';
     melFontNode.insertBefore(melMult, melFontNode.lastChild);
-  }
-  if (armFontNode) {
     var armMult = document.createElement('font');
     armMult.color = 'blue';
     armMult.innerHTML = ' (';
     armMult.innerHTML += defenceValue + ' x ' + weaponArray['arm'][armFontNode.textContent.replace(/[^a-z0-9]/ig, '')] + ' = ';
-    armMult.innerHTML += fmtDecimalNumber(defenceValue * weaponArray['arm'][armFontNode.textContent.replace(/[^a-z0-9]/ig, '')]);
+    armMult.innerHTML += (defenceValue * weaponArray['arm'][armFontNode.textContent.replace(/[^a-z0-9]/ig, '')]);
     armMult.innerHTML += ')';
     armFontNode.insertBefore(armMult, armFontNode.lastChild);
   }
@@ -1493,7 +1744,8 @@ function addBarTime(ticks, increase, every, currH, currM, spot) {
   var spanLeft = document.createElement('span');
   spanLeft.style.color = 'green';
   spanLeft.style.fontSize = 'smaller';
-  if (ticks <= 0) {
+
+  if (ticks == 0) {
     spanLeft.innerHTML = ' (FULL!)';
   } else {
     // var minsLeft = 1 + (ticks * every / increase); //alert(ticks + ' ' + every + ' ' + increase + ' ' + minsLeft);
@@ -1507,7 +1759,10 @@ function addBarTime(ticks, increase, every, currH, currM, spot) {
       currM -= 60;
       ++currH;
     }
+
+    currH += (1 * timeZoneAdj);
     if (currH > 23) currH -= 24;
+
     while (currM % every != 0) --currM;
     spanLeft.innerHTML = ' (' + ('0' + currH).substr(-2, 2) + ':' + ('0' + currM).substr(-2, 2) + ')';
   }
@@ -1652,6 +1907,15 @@ function HTMLSettings() {
       default: break;
     }
   }
+  var fxrdio2 = function(x) {
+    setGMValue('cfg', x.target.id, '1');
+    switch (x.target.id) {
+      case 'clockTop': setGMValue('cfg', 'clockPos', '0'); break;
+      case 'clockMid': setGMValue('cfg', 'clockPos', '1'); break;
+      case 'clockBot': setGMValue('cfg', 'clockPos', '2'); break;
+      default: break;
+    }
+  }
 
   var UIdiv = document.createElement('div');
   UIdiv.style.textAlign = 'center';
@@ -1687,6 +1951,13 @@ function HTMLSettings() {
       &nbsp;&nbsp;<label><input type="radio" id="itemSort2" name="itemSort"> Group by type, then order by name</label><br>\
       <br>\
       <label>Group size for item market: <input type="text" id="itemGroupSize" size="3" style="padding-left: 2px"> (0 to disable)</label>\
+      <br>\
+      <label>Time zone adjustment: <input type="text" id="timeZoneAdj" size="3" style="padding-left: 2px"> (0 to GMT)</label>\
+      <br><br>\
+      <label><b>Clock Position</b></label><br>\
+      <label><input type="radio" id="clockTop" name="clockPos">Top</label><br>\
+      <label><input type="radio" id="clockMid" name="clockPos">Middle</label><br>\
+      <label><input type="radio" id="clockBot" name="clockPos">Bottom</label><br>\
     </td><td align="center">\
       <br>\
       <table border="1" style="background-color: #cccccc">\
@@ -1704,7 +1975,18 @@ function HTMLSettings() {
     </td><td>\
       <table width="100%"><tr><td width="50%">\
         <b>Links to hide:</b><br>\
+        &nbsp;&nbsp;<label><input type="checkbox" id="hideLink_items"> Items</label><br>\
+        &nbsp;&nbsp;<label><input type="checkbox" id="hideLink_events"> Events</label><br>\
+        &nbsp;&nbsp;<label><input type="checkbox" id="hideLink_awards"> Awards</label><br>\
+        &nbsp;&nbsp;<label><input type="checkbox" id="hideLink_mail"> Mailbox</label><br>\
+        &nbsp;&nbsp;<label><input type="checkbox" id="hideLink_job"> Job</label><br>\
+        &nbsp;&nbsp;<label><input type="checkbox" id="hideLink_gym"> Gym</label><br>\
+        &nbsp;&nbsp;<label><input type="checkbox" id="hideLink_prop"> Properties</label><br>\
         &nbsp;&nbsp;<label><input type="checkbox" id="hideLink_edu"> Education</label><br>\
+        &nbsp;&nbsp;<label><input type="checkbox" id="hideLink_crimes"> Crimes</label><br>\
+        &nbsp;&nbsp;<label><input type="checkbox" id="hideLink_search"> Search</label><br>\
+        &nbsp;&nbsp;<label><input type="checkbox" id="hideLink_friends"> Friends list</label><br>\
+        &nbsp;&nbsp;<label><input type="checkbox" id="hideLink_blackl"> Black list</label><br>\
         &nbsp;&nbsp;<label><input type="checkbox" id="hideLink_news"> Newspaper</label><br>\
         &nbsp;&nbsp;<label><input type="checkbox" id="hideLink_jail"> Jail</label><br>\
         &nbsp;&nbsp;<label><input type="checkbox" id="hideLink_hospital"> Hospital</label><br>\
@@ -1712,12 +1994,21 @@ function HTMLSettings() {
         &nbsp;&nbsp;<label><input type="checkbox" id="hideLink_users"> Users Online</label><br>\
         &nbsp;&nbsp;<label><input type="checkbox" id="hideLink_forums"> Forums</label><br>\
         &nbsp;&nbsp;<label><input type="checkbox" id="hideLink_chat"> Chat</label><br>\
+        &nbsp;&nbsp;<label><input type="checkbox" id="hideLink_radio"> Radio</label><br>\
+        &nbsp;&nbsp;<label><input type="checkbox" id="hideLink_faction"> Faction</label><br>\
+        &nbsp;&nbsp;<label><input type="checkbox" id="hideLink_comp"> Competition</label><br>\
+        &nbsp;&nbsp;<label><input type="checkbox" id="hideLink_pref"> Preferences</label><br>\
         &nbsp;&nbsp;<label><input type="checkbox" id="hideLink_manual"> Manual</label><br>\
         &nbsp;&nbsp;<label><input type="checkbox" id="hideLink_rewards"> Rewards</label><br>\
       </td><td width="50%">\
         <b>Links to add:</b><br>\
         &nbsp;&nbsp;<label><input type="checkbox" id="addLink_gothere"> &lt;== go there &lt;==</label><br>\
         &nbsp;&nbsp;<label><input type="checkbox" id="addLink_notepad"> Notepad</label><br>\
+        &nbsp;&nbsp;<label><input type="checkbox" id="addLink_bank"> Bank</label><br>\
+        &nbsp;&nbsp;<label><input type="checkbox" id="addLink_pmarket"> Points Market</label><br>\
+        &nbsp;&nbsp;<label><input type="checkbox" id="addLink_imarket"> Item Market</label><br>\
+        &nbsp;&nbsp;<label><input type="checkbox" id="addLink_ahouse"> Auction House</label><br>\
+        &nbsp;&nbsp;<label><input type="checkbox" id="addLink_smarket"> Stock Market</label><br>\
         &nbsp;&nbsp;<label><input type="checkbox" id="addLink_hof"> HoF</label><br>\
         &nbsp;&nbsp;<label><input type="checkbox" id="addLink_outbox"> Outbox</label><br>\
         &nbsp;&nbsp;<label><input type="checkbox" id="addLink_jailItems"> Items (while in jail)</label><br>\
@@ -1758,6 +2049,7 @@ function HTMLSettings() {
       </label><br>\
       <br>\
       <label>Height of chat window in poker: <input type="text" id="pokerHeight" size="4" style="padding-left: 2px"> (pixels)</label><br>\
+      <label>Poker \'Refresh\' timeout: <input type="text" id="pokerTimeout" size="1" style="padding-left: 2px"> (seconds, between 10 and 55)</label>\
     </td>\
   </tr>\
 </table>\
@@ -1840,6 +2132,10 @@ Script developed by <a href="profiles.php?XID=421738">hexkid</a> (donations not 
   elem = document.getElementById('pokerHeight');
   elem.setAttribute('value', pokerHeight);
   elem.addEventListener('change', fxtext, true);
+  // pokerTimeout
+  elem = document.getElementById('pokerTimeout');
+  elem.setAttribute('value', pokerTimeout);
+  elem.addEventListener('change', fxtext, true);
   // notepadHeight
   elem = document.getElementById('notepadHeight');
   elem.setAttribute('value', notepadHeight);
@@ -1856,10 +2152,70 @@ Script developed by <a href="profiles.php?XID=421738">hexkid</a> (donations not 
   elem = document.getElementById('itemGroupSize');
   elem.setAttribute('value', itemGroupSize);
   elem.addEventListener('change', fxtext, true);
+  // timeZoneAdj
+  elem = document.getElementById('timeZoneAdj');
+  elem.setAttribute('value', timeZoneAdj);
+  elem.addEventListener('change', fxtext, true);
+  // clockTop
+  elem = document.getElementById('clockTop');
+  if (clockPos == '0') elem.setAttribute('checked', 'checked');
+  elem.addEventListener('click', fxrdio2, true);
+  // clockMid
+  elem = document.getElementById('clockMid');
+  if (clockPos == '1') elem.setAttribute('checked', 'checked');
+  elem.addEventListener('click', fxrdio2, true);
+  // clockBot
+  elem = document.getElementById('clockBot');
+  if (clockPos == '2') elem.setAttribute('checked', 'checked');
+  elem.addEventListener('click', fxrdio2, true);
 
+  // hideLink_items
+  elem = document.getElementById('hideLink_items');
+  if (hideLink_items == '1') elem.setAttribute('checked', 'checked');
+  elem.addEventListener('click', fxchkb, true);
+  // hideLink_events
+  elem = document.getElementById('hideLink_events');
+  if (hideLink_events == '1') elem.setAttribute('checked', 'checked');
+  elem.addEventListener('click', fxchkb, true);
+  // hideLink_awards
+  elem = document.getElementById('hideLink_awards');
+  if (hideLink_awards == '1') elem.setAttribute('checked', 'checked');
+  elem.addEventListener('click', fxchkb, true);
+  // hideLink_mail
+  elem = document.getElementById('hideLink_mail');
+  if (hideLink_mail == '1') elem.setAttribute('checked', 'checked');
+  elem.addEventListener('click', fxchkb, true);
+  // hideLink_job
+  elem = document.getElementById('hideLink_job');
+  if (hideLink_job == '1') elem.setAttribute('checked', 'checked');
+  elem.addEventListener('click', fxchkb, true);
+  // hideLink_gym
+  elem = document.getElementById('hideLink_gym');
+  if (hideLink_gym == '1') elem.setAttribute('checked', 'checked');
+  elem.addEventListener('click', fxchkb, true);
+  // hideLink_prop
+  elem = document.getElementById('hideLink_prop');
+  if (hideLink_prop == '1') elem.setAttribute('checked', 'checked');
+  elem.addEventListener('click', fxchkb, true);
   // hideLink_edu
   elem = document.getElementById('hideLink_edu');
   if (hideLink_edu == '1') elem.setAttribute('checked', 'checked');
+  elem.addEventListener('click', fxchkb, true);
+  // hideLink_crimes
+  elem = document.getElementById('hideLink_crimes');
+  if (hideLink_crimes == '1') elem.setAttribute('checked', 'checked');
+  elem.addEventListener('click', fxchkb, true);
+  // hideLink_search
+  elem = document.getElementById('hideLink_search');
+  if (hideLink_search == '1') elem.setAttribute('checked', 'checked');
+  elem.addEventListener('click', fxchkb, true);
+  // hideLink_friends
+  elem = document.getElementById('hideLink_friends');
+  if (hideLink_friends == '1') elem.setAttribute('checked', 'checked');
+  elem.addEventListener('click', fxchkb, true);
+  // hideLink_blackl
+  elem = document.getElementById('hideLink_blackl');
+  if (hideLink_blackl == '1') elem.setAttribute('checked', 'checked');
   elem.addEventListener('click', fxchkb, true);
   // hideLink_news
   elem = document.getElementById('hideLink_news');
@@ -1889,6 +2245,22 @@ Script developed by <a href="profiles.php?XID=421738">hexkid</a> (donations not 
   elem = document.getElementById('hideLink_chat');
   if (hideLink_chat == '1') elem.setAttribute('checked', 'checked');
   elem.addEventListener('click', fxchkb, true);
+  // hideLink_radio
+  elem = document.getElementById('hideLink_radio');
+  if (hideLink_radio == '1') elem.setAttribute('checked', 'checked');
+  elem.addEventListener('click', fxchkb, true);
+  // hideLink_faction
+  elem = document.getElementById('hideLink_faction');
+  if (hideLink_faction == '1') elem.setAttribute('checked', 'checked');
+  elem.addEventListener('click', fxchkb, true);
+  // hideLink_comp
+  elem = document.getElementById('hideLink_comp');
+  if (hideLink_comp == '1') elem.setAttribute('checked', 'checked');
+  elem.addEventListener('click', fxchkb, true);
+  // hideLink_pref
+  elem = document.getElementById('hideLink_pref');
+  if (hideLink_pref == '1') elem.setAttribute('checked', 'checked');
+  elem.addEventListener('click', fxchkb, true);
   // hideLink_manual
   elem = document.getElementById('hideLink_manual');
   if (hideLink_manual == '1') elem.setAttribute('checked', 'checked');
@@ -1897,6 +2269,7 @@ Script developed by <a href="profiles.php?XID=421738">hexkid</a> (donations not 
   elem = document.getElementById('hideLink_rewards');
   if (hideLink_rewards == '1') elem.setAttribute('checked', 'checked');
   elem.addEventListener('click', fxchkb, true);
+
   // addLink_gothere
   elem = document.getElementById('addLink_gothere');
   if (addLink_gothere == '1') elem.setAttribute('checked', 'checked');
@@ -1904,6 +2277,26 @@ Script developed by <a href="profiles.php?XID=421738">hexkid</a> (donations not 
   // addLink_notepad
   elem = document.getElementById('addLink_notepad');
   if (addLink_notepad == '1') elem.setAttribute('checked', 'checked');
+  elem.addEventListener('click', fxchkb, true);
+  // addLink_pmarket
+  elem = document.getElementById('addLink_pmarket');
+  if (addLink_pmarket == '1') elem.setAttribute('checked', 'checked');
+  elem.addEventListener('click', fxchkb, true);
+  // addLink_imarket
+  elem = document.getElementById('addLink_imarket');
+  if (addLink_imarket == '1') elem.setAttribute('checked', 'checked');
+  elem.addEventListener('click', fxchkb, true);
+  // addLink_ahouse
+  elem = document.getElementById('addLink_ahouse');
+  if (addLink_ahouse == '1') elem.setAttribute('checked', 'checked');
+  elem.addEventListener('click', fxchkb, true);
+  // addLink_smarket
+  elem = document.getElementById('addLink_smarket');
+  if (addLink_smarket == '1') elem.setAttribute('checked', 'checked');
+  elem.addEventListener('click', fxchkb, true);
+  // addLink_bank
+  elem = document.getElementById('addLink_bank');
+  if (addLink_bank == '1') elem.setAttribute('checked', 'checked');
   elem.addEventListener('click', fxchkb, true);
   // addLink_hof
   elem = document.getElementById('addLink_hof');
@@ -1995,6 +2388,89 @@ Script developed by <a href="profiles.php?XID=421738">hexkid</a> (donations not 
   elem = document.getElementById('replaceTickingClock');
   if (replaceTickingClock == '1') elem.setAttribute('checked', 'checked');
   elem.addEventListener('click', fxchkb, true);
+}
+
+function DRUGSettings() {
+  var fxtext = function(x) {
+    setGMValue('cfg', x.target.id, x.target.value);
+    if (x.target.id == 'colourDP') document.getElementById('exDP').style.backgroundColor = x.target.value;
+    if (x.target.id == 'colourBustee') document.getElementById('exBustee').style.backgroundColor = x.target.value;
+    if (x.target.id == 'colourFriend') document.getElementById('exHighlight').style.backgroundColor = x.target.value;
+    if (x.target.id == 'colourGoodLevel') document.getElementById('exLevel').style.backgroundColor = x.target.value;
+  };
+  var fxchkb = function(x) {
+    setGMValue('cfg', x.target.id, x.target.checked?'1':'0');
+  };
+  var fxrdio = function(x) {
+    setGMValue('cfg', x.target.id, '1');
+    switch (x.target.id) {
+      case 'itemSort1': setGMValue('cfg', 'itemSort2', '0'); break;
+      case 'itemSort2': setGMValue('cfg', 'itemSort1', '0'); break;
+      default: break;
+    }
+  }
+
+  var UIdiv = document.createElement('div');
+  UIdiv.style.textAlign = 'center';
+  UIdiv.style.margin = '30px 30px 30px 30px';
+  UIdiv.style.padding = '30px 30px 30px 30px';
+  UIdiv.style.backgroundColor = '#ccddcc';
+  UIdiv.innerHTML = '\
+<h2>GM DRUG Settings</h2>\
+<hr>\
+<table border="1" width="100%">\
+  <tr>\
+    <td>\
+    </td><td colspan="2"></td>\
+  </tr><tr>\
+    <td>\
+      <b>Colours:</b><br>\
+    </td><td align="center">\
+      <br>\
+      <br>\
+    </td><td>\
+      <table width="100%"><tr><td width="50%">\
+        <b>Links to hide:</b><br>\
+      </td><td width="50%">\
+        <b>Links to add:</b><br>\
+        <b>Faction links:</b><br>\
+      </td></tr></table>\
+    </td>\
+  </tr>\
+  <tr>\
+    <td>\
+      Battle stats distribution:\
+      <table>\
+        <tr><td align="right"><label>Speed:</td><td><input type="text" id="statsSpe" size="3" style="padding-left: 2px"></label></td></tr>\
+        <tr><td align="right"><label>Strength:</td><td><input type="text" id="statsStr" size="3" style="padding-left: 2px"></label></td></tr>\
+        <tr><td align="right"><label>Defence:</td><td><input type="text" id="statsDef" size="3" style="padding-left: 2px"></label></td></tr>\
+        <tr><td align="right"><label>Dexterity:</td><td><input type="text" id="statsDex" size="3" style="padding-left: 2px"></label></td></tr>\
+        <tr><td colspan="2">Specify 0 (zero) for all stats to disable \'Express Train\'.</td></tr>\
+      </table>\
+    </td><td>\
+    </td><td>\
+    </td>\
+  </tr>\
+</table>';
+  document.body.appendChild(UIdiv);
+  var elem;
+
+  // statsSpe
+  elem = document.getElementById('statsSpe');
+  elem.setAttribute('value', statsSpe);
+  elem.addEventListener('change', fxtext, true);
+  // statsStr
+  elem = document.getElementById('statsStr');
+  elem.setAttribute('value', statsStr);
+  elem.addEventListener('change', fxtext, true);
+  // statsDef
+  elem = document.getElementById('statsDef');
+  elem.setAttribute('value', statsDef);
+  elem.addEventListener('change', fxtext, true);
+  // statsDex
+  elem = document.getElementById('statsDex');
+  elem.setAttribute('value', statsDex);
+  elem.addEventListener('change', fxtext, true);
 }
 
 function ProfileSettings(xid, loc) {
