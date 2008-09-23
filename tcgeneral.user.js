@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name                TCCity
-// @version             20080922.1
+// @version             20080922.7
 // @author              hexkid
 // @description         Enhancements to Torn City via Greasemonkey Script
 // @namespace           http://tcbasic.com/
@@ -8,7 +8,7 @@
 // @include             http://www.torncity.com/*
 // ==/UserScript==
 
-const TCCity_version = '20080922.1';
+const TCCity_version = '20080922.7';
 
 // updated after 3rd party rule, by:
 //   MathewS
@@ -27,7 +27,6 @@ const TCCity_version = '20080922.1';
 //   more rules to highlight prisoners
 //   switch order of some stuff on roulette so that the respin button doesn't move
 //   highlight and noExpress options on friends and black list
-//   remove the '==>' from behind added links
 //   Commitment awards (marriage and faction) (with no checking for repeats!!)
 //   'Express spy' and 'Express Revive'
 
@@ -51,7 +50,7 @@ var jailLevelMax = readGMValue('cfg', 'jailLevelMax', '0', true);
 var hospLevelMin = readGMValue('cfg', 'hospLevelMin', '0', true);
 var hospLevelMax = readGMValue('cfg', 'hospLevelMax', '0', true);
 var highlightString = readGMValue('cfg', 'highlightID', '', true);
-  var highlightArray = highlightString.split(/\D+/);
+var highlightArray = highlightString.split(/\D+/);
 var pokerHeight = readGMValue('cfg', 'pokerHeight', '53', true);
 var pokerTimeout = readGMValue('cfg', 'pokerTimeout', '20', true);
 var notepadHeight = readGMValue('cfg', 'notepadHeight', '7', true);
@@ -158,26 +157,26 @@ var uselessLinks = new Array();
   uselessLinks[tmp++] = [/^rewards\.php$/, 2, hideLink_rewards];
 }
 
-var arrayThefts = [[1000, 'Sneak&nbsp;Thief'], [2500, 'Prowler'], [5000, 'Safe&nbsp;Cracker'], [7500, 'Marauder'], [10000, 'Cat&nbsp;Burgler']];
-var arrayVirus = [[500, 'Ub3rn00b&nbsp;Hacker'], [1000, 'N00b&nbsp;Hacker'], [1500, '1337n00b&nbsp;Hacker'],
-                  [2000, 'Ph34r3dn00b&nbsp;Hacker'], [2500, 'Ph34r3d&nbsp;Hacker'], [3000, 'Ph343d1337&nbsp;Hacker'],
-                  [3500, 'Ub3rph34r3d&nbsp;Hacker'], [4000, 'Ub3r&nbsp;Hacker'], [4500, '1337&nbsp;Hacker'],
-                  [5000, 'Ub3r1337&nbsp;Hacker'],[5500, 'Key&nbsp;Puncher'],[6000, 'Script&nbsp;Kid']];
-var arrayMurder = [[1000, 'Beginner&nbsp;Assassin'], [2000, 'Novice&nbsp;Assassin'], [3000, 'Competent&nbsp;Assassin'],
-                   [4000, 'Elite&nbsp;Assassin'], [5000, 'Deadly&nbsp;Assassin'], [6000, 'Lethal&nbsp;Assassin']];
-var arrayDrugs = [[250, 'Drug&nbsp;Pusher'], [500, 'Drug&nbsp;Runner'], [1000, 'Drug&nbsp;Dealer'],
-                  [2000, 'Drug&nbsp;Lord']];
+var arrayThefts = [[1000, 'Sneak Thief'], [2500, 'Prowler'], [5000, 'Safe Cracker'], [7500, 'Marauder'], [10000, 'Cat Burgler']];
+var arrayVirus = [[500, 'Ub3rn00b Hacker'], [1000, 'N00b Hacker'], [1500, '1337n00b Hacker'],
+                  [2000, 'Ph34r3dn00b Hacker'], [2500, 'Ph34r3d Hacker'], [3000, 'Ph343d1337 Hacker'],
+                  [3500, 'Ub3rph34r3d Hacker'], [4000, 'Ub3r Hacker'], [4500, '1337 Hacker'],
+                  [5000, 'Ub3r1337 Hacker'],[5500, 'Key Puncher'],[6000, 'Script Kid']];
+var arrayMurder = [[1000, 'Beginner Assassin'], [2000, 'Novice Assassin'], [3000, 'Competent Assassin'],
+                   [4000, 'Elite Assassin'], [5000, 'Deadly Assassin'], [6000, 'Lethal Assassin']];
+var arrayDrugs = [[250, 'Drug Pusher'], [500, 'Drug Runner'], [1000, 'Drug Dealer'],
+                  [2000, 'Drug Lord']];
 var arrayFraud = [[300, 'Fake'], [600, 'Counterfeit'], [900, 'Pretender'],
                   [1500, 'Imposter'], [2000, 'Pseudo'], [2500, 'Imitation'],
                   [3000, 'Simulated'], [3500, 'Hoax'], [4000, 'Faux'],
                   [5000, 'Poser'], [6000, 'Deception'], [7000, 'Phony']];
-var arrayGTA = [[200, 'Gone&nbsp;In&nbsp;300&nbsp;Seconds'], [400, 'Gone&nbsp;In&nbsp;240&nbsp;Seconds'], [600, 'Gone&nbsp;In&nbsp;180&nbsp;Seconds'],
-                [800, 'Gone&nbsp;In&nbsp;120&nbsp;Seconds'], [1000, 'Gone&nbsp;In&nbsp;60&nbsp;Seconds'], [1200, 'Gone&nbsp;In&nbsp;30&nbsp;Seconds'],
-                [1500, 'Gone&nbsp;In&nbsp;45&nbsp;Seconds'], [2000, 'Gone&nbsp;In&nbsp;15&nbsp;Seconds'], [2500, 'Booster'],
-                [3000, 'Joy&nbsp;Rider'], [3500, 'Super&nbsp;Booster'], [4000, 'Master&nbsp;Carjacker'],
-                [4500, 'Slim&nbsp;Jim'], [5000, 'Novice&nbsp;Joy&nbsp;Rider'], [5500, 'Novice&nbsp;Slim&nbsp;Jim'],
-                [6000, 'Professional&nbsp;Joy&nbsp;Rider'], [6500, 'Professional&nbsp;Booster'], [7000, 'Professional&nbsp;Slim&nbsp;Jim'],
-                [8000, 'Master&nbsp;Joy&nbsp;Rider']];
+var arrayGTA = [[200, 'Gone In 300 Seconds'], [400, 'Gone In 240 Seconds'], [600, 'Gone In 180 Seconds'],
+                [800, 'Gone In 120 Seconds'], [1000, 'Gone In 60 Seconds'], [1200, 'Gone In 30 Seconds'],
+                [1500, 'Gone In 45 Seconds'], [2000, 'Gone In 15 Seconds'], [2500, 'Booster'],
+                [3000, 'Joy Rider'], [3500, 'Super Booster'], [4000, 'Master Carjacker'],
+                [4500, 'Slim Jim'], [5000, 'Novice Joy Rider'], [5500, 'Novice Slim Jim'],
+                [6000, 'Professional Joy Rider'], [6500, 'Professional Booster'], [7000, 'Professional Slim Jim'],
+                [8000, 'Master Joy Rider']];
 
 var bustAwards = new Array();
 bustAwards[0] = [250, 'Novice Buster'];
@@ -1201,7 +1200,7 @@ for (var i=0; i<LINKs.length; ++i) {
       ADVLink.setAttribute('href', 'friendlist.php?step=adv');
       ADVLink.innerHTML = 'Advanced';
       LINKs[i].parentNode.insertBefore(ADVLink, LINKs[i].nextSibling);
-      LINKs[i].parentNode.insertBefore(document.createTextNode(' | '), LINKs[i].nextSibling);
+      LINKs[i].parentNode.insertBefore(indent, LINKs[i].nextSibling);
       FRND_done = true;
     }
     if (!ENMY_done && (LINKs[i].getAttribute('href') == 'blacklist.php') && (hideLink_blackl =='0') && (addLink_enemiesAdv == '1')) {
@@ -1209,7 +1208,7 @@ for (var i=0; i<LINKs.length; ++i) {
       ADVLink.setAttribute('href', 'blacklist.php?step=adv');
       ADVLink.innerHTML = 'Advanced';
       LINKs[i].parentNode.insertBefore(ADVLink, LINKs[i].nextSibling);
-      LINKs[i].parentNode.insertBefore(document.createTextNode(' | '), LINKs[i].nextSibling);
+      LINKs[i].parentNode.insertBefore(indent, LINKs[i].nextSibling);
       ENMY_done = true;
     }
     if (!FCTN_done && (hideLink_faction =='0') && (LINKs[i].getAttribute('href') == '/factions.php?step=your')) {
@@ -1246,9 +1245,7 @@ for (var i=0; i<LINKs.length; ++i) {
       if (addLink_facForum == '1') {
 
         var ForumLink = document.createElement('a');
-	//http://www.torncity.com/forums.php?forumID=999&factionID=7095
 	ForumLink.setAttribute('href', 'forums.php?forumID=' + facForumID + '&factionID=' + facID);
-        //ForumLink.setAttribute('href', 'factions.php?step=your&action=forum');
         ForumLink.innerHTML = 'Forum';
         LINKs[i].parentNode.insertBefore(ForumLink, LINKs[i].nextSibling);
         LINKs[i].parentNode.insertBefore(indent.cloneNode(true), LINKs[i].nextSibling);
@@ -1381,17 +1378,23 @@ for (var i=0; i<LINKs.length; ++i) {
           }
 
           timeH += (1 * timeZoneAdj);
+          if (timeH < 0)
+            timeH += 24;
 
           while (timeH >= 24) {
             timeH -= 24;
           }
           var newTimeSpan = document.createElement('span');
           newTimeSpan.innerHTML = ('0'+timeH).substr(-2, 2) + ':' + ('0'+timeM).substr(-2, 2) + ':' + ('0'+timeS).substr(-2, 2);
+          var oldTime = document.createElement('span');
+          oldTime.innerHTML = ' TC:'+timeArray[0];
           timeNode.textContent = timeNode.textContent.replace(/[0-9:]/g, '');
 
           if ((clockPos == 0) || (clockPos == 1)) {
             var clockPos2 = document.getElementById('clock');
+            clockPos2.parentNode.insertBefore(oldTime, clockPos2.nextSibling);
             clockPos2.parentNode.insertBefore(newTimeSpan, clockPos2.nextSibling);
+            clockPos2.parentNode.insertBefore(document.createTextNode('L:'), clockPos2.nextSibling);
           }
           else
             timeNode.parentNode.insertBefore(newTimeSpan, timeNode.nextSibling);
@@ -1404,7 +1407,7 @@ for (var i=0; i<LINKs.length; ++i) {
 
     if (LINKs[i].getAttribute('href').match(/^jail1\.php\?XID=\d+&action=breakout$/)) {
       if (
-            (document.location.href.match(/\/jailview\.php|jailview\.php\?start=([0-9]+)$/))
+            (document.location.href.match(/\/jailview\.php*/))
             ||
             ((document.location.href.match(/\/index\.php$/)) && (document.body.hasAttribute('bgcolor') && (document.body.getAttribute('bgcolor') == '#cd853f')))
          ) {
@@ -1460,7 +1463,7 @@ for (var i=0; i<LINKs.length; ++i) {
       var IMGs = document.getElementsByTagName('img');
       for (var jjj=0; jjj<IMGs.length; ++jjj) {
         if (IMGs[jjj].hasAttribute('title')) {
-          var jobRX = /^Working in the (.*) ~ Rank: (.*)$/;
+          var jobRX = /^Working in (?:the )?(.*) ~ Rank: (.*)$/;
           if (IMGs[jjj].getAttribute('title').match(jobRX)) {
             var jobtype = RegExp.$1;
             var jobrank = RegExp.$2;
@@ -1745,7 +1748,7 @@ function addBarTime(ticks, increase, every, currH, currM, spot) {
   spanLeft.style.color = 'green';
   spanLeft.style.fontSize = 'smaller';
 
-  if (ticks == 0) {
+  if (ticks <= 0) {
     spanLeft.innerHTML = ' (FULL!)';
   } else {
     // var minsLeft = 1 + (ticks * every / increase); //alert(ticks + ' ' + every + ' ' + increase + ' ' + minsLeft);
@@ -1762,6 +1765,7 @@ function addBarTime(ticks, increase, every, currH, currM, spot) {
 
     currH += (1 * timeZoneAdj);
     if (currH > 23) currH -= 24;
+    else if (currH < 0) currH += 24;
 
     while (currM % every != 0) --currM;
     spanLeft.innerHTML = ' (' + ('0' + currH).substr(-2, 2) + ':' + ('0' + currM).substr(-2, 2) + ')';
@@ -1951,13 +1955,14 @@ function HTMLSettings() {
       &nbsp;&nbsp;<label><input type="radio" id="itemSort2" name="itemSort"> Group by type, then order by name</label><br>\
       <br>\
       <label>Group size for item market: <input type="text" id="itemGroupSize" size="3" style="padding-left: 2px"> (0 to disable)</label>\
-      <br>\
+      <br><br>\
+      <label><b>Time Zone Location</b></label><br>\
       <label>Time zone adjustment: <input type="text" id="timeZoneAdj" size="3" style="padding-left: 2px"> (0 to GMT)</label>\
       <br><br>\
       <label><b>Clock Position</b></label><br>\
-      <label><input type="radio" id="clockTop" name="clockPos">Top</label><br>\
-      <label><input type="radio" id="clockMid" name="clockPos">Middle</label><br>\
-      <label><input type="radio" id="clockBot" name="clockPos">Bottom</label><br>\
+      &nbsp;&nbsp;<label><input type="radio" id="clockTop" name="clockPos">Top</label><br>\
+      &nbsp;&nbsp;<label><input type="radio" id="clockMid" name="clockPos">Middle</label><br>\
+      &nbsp;&nbsp;<label><input type="radio" id="clockBot" name="clockPos">Bottom</label><br>\
     </td><td align="center">\
       <br>\
       <table border="1" style="background-color: #cccccc">\
@@ -2401,14 +2406,6 @@ function DRUGSettings() {
   var fxchkb = function(x) {
     setGMValue('cfg', x.target.id, x.target.checked?'1':'0');
   };
-  var fxrdio = function(x) {
-    setGMValue('cfg', x.target.id, '1');
-    switch (x.target.id) {
-      case 'itemSort1': setGMValue('cfg', 'itemSort2', '0'); break;
-      case 'itemSort2': setGMValue('cfg', 'itemSort1', '0'); break;
-      default: break;
-    }
-  }
 
   var UIdiv = document.createElement('div');
   UIdiv.style.textAlign = 'center';
