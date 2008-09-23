@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name                TCCity
-// @version             20080922.7
+// @version             20080923.1
 // @author              hexkid
 // @description         Enhancements to Torn City via Greasemonkey Script
 // @namespace           http://tcbasic.com/
@@ -8,7 +8,7 @@
 // @include             http://www.torncity.com/*
 // ==/UserScript==
 
-const TCCity_version = '20080922.7';
+const TCCity_version = '20080923.1';
 
 // updated after 3rd party rule, by:
 //   MathewS
@@ -157,26 +157,26 @@ var uselessLinks = new Array();
   uselessLinks[tmp++] = [/^rewards\.php$/, 2, hideLink_rewards];
 }
 
-var arrayThefts = [[1000, 'Sneak Thief'], [2500, 'Prowler'], [5000, 'Safe Cracker'], [7500, 'Marauder'], [10000, 'Cat Burgler']];
-var arrayVirus = [[500, 'Ub3rn00b Hacker'], [1000, 'N00b Hacker'], [1500, '1337n00b Hacker'],
-                  [2000, 'Ph34r3dn00b Hacker'], [2500, 'Ph34r3d Hacker'], [3000, 'Ph343d1337 Hacker'],
-                  [3500, 'Ub3rph34r3d Hacker'], [4000, 'Ub3r Hacker'], [4500, '1337 Hacker'],
-                  [5000, 'Ub3r1337 Hacker'],[5500, 'Key Puncher'],[6000, 'Script Kid']];
-var arrayMurder = [[1000, 'Beginner Assassin'], [2000, 'Novice Assassin'], [3000, 'Competent Assassin'],
-                   [4000, 'Elite Assassin'], [5000, 'Deadly Assassin'], [6000, 'Lethal Assassin']];
-var arrayDrugs = [[250, 'Drug Pusher'], [500, 'Drug Runner'], [1000, 'Drug Dealer'],
-                  [2000, 'Drug Lord']];
+var arrayThefts = [[1000, 'Sneak&nbsp;Thief'], [2500, 'Prowler'], [5000, 'Safe&nbsp;Cracker'], [7500, 'Marauder'], [10000, 'Cat&nbsp;Burgler']];
+var arrayVirus = [[500, 'Ub3rn00b&nbsp;Hacker'], [1000, 'N00b&nbsp;Hacker'], [1500, '1337n00b&nbsp;Hacker'],
+                  [2000, 'Ph34r3dn00b&nbsp;Hacker'], [2500, 'Ph34r3d&nbsp;Hacker'], [3000, 'Ph343d1337&nbsp;Hacker'],
+                  [3500, 'Ub3rph34r3d&nbsp;Hacker'], [4000, 'Ub3r&nbsp;Hacker'], [4500, '1337&nbsp;Hacker'],
+                  [5000, 'Ub3r1337&nbsp;Hacker'],[5500, 'Key&nbsp;Puncher'],[6000, 'Script&nbsp;Kid']];
+var arrayMurder = [[1000, 'Beginner&nbsp;Assassin'], [2000, 'Novice&nbsp;Assassin'], [3000, 'Competent&nbsp;Assassin'],
+                   [4000, 'Elite&nbsp;Assassin'], [5000, 'Deadly&nbsp;Assassin'], [6000, 'Lethal&nbsp;Assassin']];
+var arrayDrugs = [[250, 'Drug&nbsp;Pusher'], [500, 'Drug&nbsp;Runner'], [1000, 'Drug&nbsp;Dealer'],
+                  [2000, 'Drug&nbsp;Lord']];
 var arrayFraud = [[300, 'Fake'], [600, 'Counterfeit'], [900, 'Pretender'],
                   [1500, 'Imposter'], [2000, 'Pseudo'], [2500, 'Imitation'],
                   [3000, 'Simulated'], [3500, 'Hoax'], [4000, 'Faux'],
                   [5000, 'Poser'], [6000, 'Deception'], [7000, 'Phony']];
-var arrayGTA = [[200, 'Gone In 300 Seconds'], [400, 'Gone In 240 Seconds'], [600, 'Gone In 180 Seconds'],
-                [800, 'Gone In 120 Seconds'], [1000, 'Gone In 60 Seconds'], [1200, 'Gone In 30 Seconds'],
-                [1500, 'Gone In 45 Seconds'], [2000, 'Gone In 15 Seconds'], [2500, 'Booster'],
-                [3000, 'Joy Rider'], [3500, 'Super Booster'], [4000, 'Master Carjacker'],
-                [4500, 'Slim Jim'], [5000, 'Novice Joy Rider'], [5500, 'Novice Slim Jim'],
-                [6000, 'Professional Joy Rider'], [6500, 'Professional Booster'], [7000, 'Professional Slim Jim'],
-                [8000, 'Master Joy Rider']];
+var arrayGTA = [[200, 'Gone&nbsp;In&nbsp;300&nbsp;Seconds'], [400, 'Gone&nbsp;In&nbsp;240&nbsp;Seconds'], [600, 'Gone&nbsp;In&nbsp;180&nbsp;Seconds'],
+                [800, 'Gone&nbsp;In&nbsp;120&nbsp;Seconds'], [1000, 'Gone&nbsp;In&nbsp;60&nbsp;Seconds'], [1200, 'Gone&nbsp;In&nbsp;30&nbsp;Seconds'],
+                [1500, 'Gone&nbsp;In&nbsp;45&nbsp;Seconds'], [2000, 'Gone&nbsp;In&nbsp;15&nbsp;Seconds'], [2500, 'Booster'],
+                [3000, 'Joy&nbsp;Rider'], [3500, 'Super&nbsp;Booster'], [4000, 'Master&nbsp;Carjacker'],
+                [4500, 'Slim&nbsp;Jim'], [5000, 'Novice&nbsp;Joy&nbsp;Rider'], [5500, 'Novice&nbsp;Slim&nbsp;Jim'],
+                [6000, 'Professional&nbsp;Joy&nbsp;Rider'], [6500, 'Professional&nbsp;Booster'], [7000, 'Professional&nbsp;Slim&nbsp;Jim'],
+                [8000, 'Master&nbsp;Joy&nbsp;Rider']];
 
 var bustAwards = new Array();
 bustAwards[0] = [250, 'Novice Buster'];
